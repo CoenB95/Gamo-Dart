@@ -1,18 +1,17 @@
-import 'dart:web_gl';
-
 import 'package:gamo_gl/components/gameobjectcomponent.dart';
 import 'package:gamo_gl/gl/vertex.dart';
 import 'package:vector_math/vector_math.dart';
 
 import 'gameobjectgroup.dart';
 
-abstract class GameObject<T extends Vertex> {
+abstract class GameObject {
   GameObjectGroup _parentGroup;
-  List<GameObjectComponent<T>> _components = [];
-  List<T> vertices = [];
+  List<GameObjectComponent> _components = [];
+  List<Vertex> vertices = [];
   Vector3 position;
   Quaternion orientation;
   Vector3 scale;
+  bool isDirty = true;
 
   GameObject() {
     position = Vector3.zero();
@@ -29,9 +28,11 @@ abstract class GameObject<T extends Vertex> {
     _components.add(component);
   }
 
-  void build(RenderingContext gl) {
-    vertices.clear();
-    vertices.addAll(_components.map((c) => c.onBuild()).expand((e) => e));
+  void build({bool force = false}) {
+    if (isDirty || force) {
+      vertices.clear();
+      vertices.addAll(_components.map((c) => c.onBuild()).expand((e) => e));
+    }
   }
 
   void draw() {

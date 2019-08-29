@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:web_gl';
 
+import 'package:gamo_gl/gl/shader.dart';
 import 'package:vector_math/vector_math.dart';
 
 import 'test.dart';
@@ -11,10 +12,10 @@ RenderingContext gl;
 Lesson1 lesson;
 
 void main() {
-  mvMatrix = new Matrix4.identity();
+  mvMatrix = Matrix4.identity();
   // Nab the context we'll be drawing to.
   gl = canvas.getContext3d();
-  lesson = new Lesson1(gl);
+  lesson = Lesson1(gl);
   if (gl == null) {
     return;
   }
@@ -40,9 +41,9 @@ void main() {
 /// parameter is an increasing value based on when the animation loop started.
 tick(time) {
   window.animationFrame.then(tick);
-  /*if (trackFrameRate) frameCount(time);
+  //if (trackFrameRate) frameCount(time);
   lesson.handleKeys();
-  lesson.animate(time);*/
+  lesson.animate(time);
   lesson.drawScene(canvas.width, canvas.height, canvas.width / canvas.height);
 
 }
@@ -74,10 +75,10 @@ List<Matrix4> mvStack = new List<Matrix4>();
 
 /// Add a copy of the current Model-View matrix to the the stack for future
 /// restoration.
-mvPushMatrix() => mvStack.add(mvMatrix.clone());
+mvPushMatrix() => mvStack.add(ShaderProgram.modelMatrix.clone());
 
 /// Pop the last matrix off the stack and set the Model View matrix.
-mvPopMatrix() => mvMatrix = mvStack.removeLast();
+mvPopMatrix() => ShaderProgram.modelMatrix = mvStack.removeLast();
 
 /// Handle common keys through callbacks, making lessons a little easier to code
 void handleDirection({up(), down(), left(), right()}) {

@@ -28,21 +28,29 @@ abstract class Uniform<T> {
   final String name;
   UniformLocation id;
   T value;
+  T Function() bindValue;
 
-  Uniform(this.name, this.value);
+  Uniform(this.name, this.value, [this.bindValue]);
 
   void _update(RenderingContext gl);
 }
 
 class Matrix4Uniform extends Uniform<Matrix4> {
-  Matrix4Uniform(String name) : super(name, Matrix4.identity());
+  Matrix4Uniform(String name, [Matrix4 Function() valueBind]) : super(name, Matrix4.identity(), valueBind);
 
   @override
-  void _update(RenderingContext gl) =>
+  void _update(RenderingContext gl) {
+    if (bindValue != null) {
+      value = bindValue();
+    }
+
+    if (value != null) {
       gl.uniformMatrix4fv(id, false, value.storage);
+    }
+  }
 }
 
-class ArrayBuffer<T extends Vertex> {
+class ArrayBuffer {
   Buffer _buffer;
   RenderingContext _gl;
   Float32List _data;
@@ -50,7 +58,7 @@ class ArrayBuffer<T extends Vertex> {
   final DrawMode mode;
   int get length => _data.length;
 
-  ArrayBuffer(this._gl, this.mode, [Iterable<T> data]) {
+  ArrayBuffer(this._gl, this.mode, [Iterable<Vertex> data]) {
     if (data != null) {
       setData(data);
     }
@@ -63,7 +71,7 @@ class ArrayBuffer<T extends Vertex> {
     _gl.bindBuffer(WebGL.ARRAY_BUFFER, _buffer);
   }
 
-  void setData(Iterable<T> data) {
+  void setData(Iterable<Vertex> data) {
     if (_buffer == null) {
       _buffer = _gl.createBuffer();
     }
@@ -89,8 +97,12 @@ class ArrayBuffer<T extends Vertex> {
   }
 }
 
-class ShaderProgram<T extends Vertex> {
+class ShaderProgram {
   static ShaderProgram active;
+  static Matrix4 modelMatrix = Matrix4.identity();
+  static Matrix4 viewMatrix = Matrix4.identity();
+  static Matrix4 projectionMatrix = Matrix4.identity();
+  static Matrix4 get modelViewMatrix => viewMatrix * modelMatrix;
 
   RenderingContext gl;
 
@@ -135,7 +147,7 @@ class ShaderProgram<T extends Vertex> {
     }
   }
 
-  void draw(ArrayBuffer<T> buffer) {
+  void draw(ArrayBuffer buffer) {
     buffer._bind();
     _bindAttributeBuffer();
     _updateUniforms();

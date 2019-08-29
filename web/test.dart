@@ -3,6 +3,8 @@ import 'dart:web_gl';
 import 'package:gamo_gl/gl/basicshader.dart';
 import 'package:gamo_gl/gl/vertex.dart';
 import 'package:gamo_gl/gl/shader.dart';
+import 'package:gamo_gl/objects/cube.dart';
+import 'package:gamo_gl/objects/gameobjectgroup.dart';
 import 'package:vector_math/vector_math.dart';
 
 import 'main.dart';
@@ -11,8 +13,9 @@ import 'main.dart';
 class Lesson1 {
   BasicShader shader;
   RenderingContext gl;
+  GameObjectGroup scene = GameObjectGroup();
 
-  ArrayBuffer<VertexP3C4> triangleBuffer, squareBuffer;
+  ArrayBuffer triangleBuffer, squareBuffer;
 
   Lesson1(this.gl) {
     shader = BasicShader(gl);
@@ -20,18 +23,15 @@ class Lesson1 {
 
     // Allocate and build the two buffers we need to draw a triangle and box.
     // createBuffer() asks the WebGL system to allocate some data for us
-    triangleBuffer = ArrayBuffer<VertexP3C4>(gl, DrawMode.triangles, [
+    triangleBuffer = ArrayBuffer(gl, DrawMode.triangles, [
       VertexP3C4(Vector3( 0,  1, 0), Colors.red),
       VertexP3C4(Vector3(-1, -1, 0), Colors.green),
       VertexP3C4(Vector3( 1, -1, 0), Colors.blue)
     ]);
 
-    squareBuffer = ArrayBuffer<VertexP3C4>(gl, DrawMode.triangleStrip, [
-      VertexP3C4(Vector3( 1,  1, 0), Colors.green),
-      VertexP3C4(Vector3(-1,  1, 0), Colors.white),
-      VertexP3C4(Vector3( 1, -1, 0), Colors.white),
-      VertexP3C4(Vector3(-1, -1, 0), Colors.white)
-    ]);
+    Cube cube = Cube();
+    cube.position = Vector3(1.5, 0.0, -7.0);
+    scene.addObject(cube);
 
     // Specify the color to clear with (black with 100% alpha) and then enable
     // depth testing.
@@ -48,21 +48,21 @@ class Lesson1 {
     // Setup the perspective - you might be wondering why we do this every
     // time, and that will become clear in much later lessons. Just know, you
     // are not crazy for thinking of caching this.
-    shader.perspectiveMatrix.value = makePerspectiveMatrix(45.0, aspect, 0.1, 100.0);
-    shader.modelViewMatrix.value = Matrix4.identity();
+    ShaderProgram.projectionMatrix = makePerspectiveMatrix(45.0, aspect, 0.1, 100.0);
 
     // First stash the current model view matrix before we start moving around.
     mvPushMatrix();
 
-    shader.modelViewMatrix.value.translate(-1.5, 0.0, -7.0);
+    ShaderProgram.modelMatrix.translate(-1.5, 0.0, -7.0);
     shader.draw(triangleBuffer);
 
     // Move 3 units to the right
-    shader.modelViewMatrix.value.translate(3.0, 0.0, 0.0);
+    //shader.modelViewMatrix.value.translate(3.0, 0.0, 0.0);
 
     // And get ready to draw the square just like we did the triangle...
     // Except now draw 2 triangles, re-using the vertices found in the buffer.
-    shader.draw(squareBuffer);
+    //shader.draw(squareBuffer);
+    scene.draw();
 
     // Finally, reset the matrix back to what it was before we moved around.
     mvPopMatrix();
@@ -71,6 +71,8 @@ class Lesson1 {
   void animate(num now) {
     // We're not animating the scene, but if you want to experiment, here's
     // where you get to play around.
+    scene.update(0.010);
+    scene.build();
   }
 
   void handleKeys() {

@@ -1,11 +1,10 @@
 import 'dart:web_gl';
 
-import 'package:gamo_gl/gl/vertex.dart';
 import 'package:gamo_gl/gl/shader.dart';
 
-class BasicShader extends ShaderProgram<VertexP3C4> {
-  final Matrix4Uniform modelViewMatrix = Matrix4Uniform('uMVMatrix');
-  final Matrix4Uniform perspectiveMatrix = Matrix4Uniform('uPMatrix');
+class BasicShader extends ShaderProgram {
+  final Matrix4Uniform modelViewMatrix = Matrix4Uniform('uMVMatrix', () => ShaderProgram.modelViewMatrix);
+  final Matrix4Uniform perspectiveMatrix = Matrix4Uniform('uPMatrix', () => ShaderProgram.projectionMatrix);
 
   final Attribute _location = Attribute('aVertexPosition', 3);
   final Attribute _color = Attribute('aVertexColor', 4);

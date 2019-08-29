@@ -1,9 +1,9 @@
 import 'package:gamo_gl/gl/vertex.dart';
 import 'package:gamo_gl/objects/gameobject.dart';
 
-abstract class GameObjectComponent<T extends Vertex> {
-  GameObject<T> _parentObject;
-  GameObject<T> get parentObject => _parentObject;
+abstract class GameObjectComponent {
+  GameObject _parentObject;
+  GameObject get parentObject => _parentObject;
   set parentObject(GameObject value) {
     onDetach();
     _parentObject = value;
@@ -11,7 +11,7 @@ abstract class GameObjectComponent<T extends Vertex> {
   }
 
   void onAttach() {}
-  List<T> onBuild() { return []; }
+  List<Vertex> onBuild() { return []; }
   void onDetach() {}
   void onDraw() {}
   void onUpdate(double elapsedSeconds) {}
