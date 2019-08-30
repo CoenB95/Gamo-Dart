@@ -1,11 +1,10 @@
 import 'dart:web_gl';
 
-import 'package:gamo_gl/gl/shader.dart';
+import 'package:gamo_dart/shaders/shader.dart';
 
-class BasicShader extends ShaderProgram {
-  final Matrix4Uniform modelViewMatrix = Matrix4Uniform('uMVMatrix', () => ShaderProgram.modelViewMatrix);
-  final Matrix4Uniform perspectiveMatrix = Matrix4Uniform('uPMatrix', () => ShaderProgram.projectionMatrix);
-
+class ShaderP3C4 extends ShaderProgram {
+  final Matrix4Uniform _modelViewMatrix = Matrix4Uniform('uMVMatrix', () => ShaderProgram.modelViewMatrix);
+  final Matrix4Uniform _perspectiveMatrix = Matrix4Uniform('uPMatrix', () => ShaderProgram.projectionMatrix);
   final Attribute _location = Attribute('aVertexPosition', 3);
   final Attribute _color = Attribute('aVertexColor', 4);
 
@@ -28,8 +27,8 @@ class BasicShader extends ShaderProgram {
           }
         ''';
 
-  BasicShader(RenderingContext gl) : super(gl) {
+  ShaderP3C4(RenderingContext gl) : super(gl) {
     init(_vertSrc, _fragSrc, [_location, _color],
-        [modelViewMatrix, perspectiveMatrix]);
+        [_modelViewMatrix, _perspectiveMatrix]);
   }
 }

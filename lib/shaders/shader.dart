@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 import 'dart:web_gl';
 
-import 'package:gamo_gl/gl/vertex.dart';
+import 'package:gamo_dart/shaders/basicshaders.dart';
+import 'package:gamo_dart/shaders/vertex.dart';
 import 'package:vector_math/vector_math.dart';
 
 enum DrawMode {
@@ -99,6 +100,9 @@ class ArrayBuffer {
 
 class ShaderProgram {
   static ShaderProgram active;
+
+  static ShaderProgram shaderP3C4;
+
   static Matrix4 modelMatrix = Matrix4.identity();
   static Matrix4 viewMatrix = Matrix4.identity();
   static Matrix4 projectionMatrix = Matrix4.identity();
@@ -112,6 +116,10 @@ class ShaderProgram {
   Shader _fragShader, _vertShader;
 
   ShaderProgram(this.gl);
+
+  static void initShaders(RenderingContext gl) {
+    shaderP3C4 = ShaderP3C4(gl);
+  }
 
   void init(String vertSrc, String fragSrc,
       List<Attribute> attributes, List<Uniform> uniforms) {

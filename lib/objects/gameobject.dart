@@ -1,8 +1,8 @@
-import 'package:gamo_gl/components/gameobjectcomponent.dart';
-import 'package:gamo_gl/gl/vertex.dart';
+import 'package:gamo_dart/components/gameobjectcomponent.dart';
+import 'package:gamo_dart/objects/gameobjectgroup.dart';
+import 'package:gamo_dart/shaders/shader.dart';
+import 'package:gamo_dart/shaders/vertex.dart';
 import 'package:vector_math/vector_math.dart';
-
-import 'gameobjectgroup.dart';
 
 abstract class GameObject {
   GameObjectGroup _parentGroup;
@@ -35,8 +35,9 @@ abstract class GameObject {
     }
   }
 
-  void draw() {
-    _components.forEach((c) => c.onDraw());
+  void draw(Matrix4 transform) {
+    Matrix4 innerTransform = transform * Matrix4.compose(position, orientation, scale);
+    _components.forEach((c) => c.onDraw(innerTransform));
   }
 
   List<GameObjectComponent> getComponents() {

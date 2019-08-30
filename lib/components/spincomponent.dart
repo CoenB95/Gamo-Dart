@@ -1,4 +1,4 @@
-import 'package:gamo_gl/components/gameobjectcomponent.dart';
+import 'package:gamo_dart/components/gameobjectcomponent.dart';
 import 'package:vector_math/vector_math.dart';
 
 class SpinComponent extends GameObjectComponent {

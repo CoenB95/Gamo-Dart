@@ -1,10 +1,7 @@
-import 'dart:web_gl';
+import 'package:gamo_dart/objects/gameobject.dart';
+import 'package:vector_math/vector_math.dart';
 
-import 'package:gamo_gl/gl/vertex.dart';
-
-import 'gameobject.dart';
-
-class GameObjectGroup<T extends Vertex> extends GameObject {
+class GameObjectGroup extends GameObject {
   List<GameObject> objects = [];
 
   GameObjectGroup();
@@ -27,9 +24,11 @@ class GameObjectGroup<T extends Vertex> extends GameObject {
   }
 
   @override
-  void draw() {
-    super.draw();
-    objects.forEach((o) => o.draw());
+  void draw(Matrix4 transform) {
+    super.draw(transform);
+
+    Matrix4 innerTransform = transform * Matrix4.compose(position, orientation, scale);
+    objects.forEach((o) => o.draw(innerTransform));
   }
 
   @override
@@ -45,9 +44,4 @@ class GameObjectGroup<T extends Vertex> extends GameObject {
   void removeObjects(Iterable<GameObject> objects) {
     this.objects.forEach((o) => removeObject(o));
   }
-
-/*void setCamera(Camera camera) {
-  group.getScene().setCamera(camera.camera);
-  addObject(camera);
-  }*/
 }
