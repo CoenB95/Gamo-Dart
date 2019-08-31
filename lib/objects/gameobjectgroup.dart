@@ -34,7 +34,7 @@ class GameObjectGroup extends GameObject {
   @override
   void update(double elapsedSeconds) {
     super.update(elapsedSeconds);
-    objects.forEach((o) => o.update(elapsedSeconds));
+    List.of(objects).forEach((o) => o.update(elapsedSeconds));
   }
 
   void removeObject(GameObject object) {

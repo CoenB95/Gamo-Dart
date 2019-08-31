@@ -5,13 +5,16 @@ import 'package:gamo_dart/shaders/vertex.dart';
 import 'package:vector_math/vector_math.dart';
 
 abstract class GameObject {
-  GameObjectGroup _parentGroup;
-  List<GameObjectComponent> _components = [];
-  List<Vertex> vertices = [];
   Vector3 position;
   Quaternion orientation;
   Vector3 scale;
+  GameObjectGroup get parentGroup => _parentGroup;
+
+  List<Vertex> vertices = [];
   bool isDirty = true;
+
+  GameObjectGroup _parentGroup;
+  List<GameObjectComponent> _components = [];
 
   GameObject() {
     position = Vector3.zero();
@@ -42,10 +45,6 @@ abstract class GameObject {
 
   List<GameObjectComponent> getComponents() {
     return List.unmodifiable(_components);
-  }
-
-  GameObjectGroup getParentGroup() {
-    return _parentGroup;
   }
 
   void onAttach(GameObjectGroup newParent) {}

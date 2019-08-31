@@ -6,9 +6,13 @@ import 'package:gamo_dart/shaders/shader.dart';
 import 'package:vector_math/vector_math.dart';
 
 class Cube extends GameObject {
-  Cube() {
+  Cube({double size = 1, Vector4 color}) {
     addComponent(SpinComponent(Quaternion.euler(10.0, 0.0, 0.0)));
-    addComponent(SolidCubeBuildComponent());
+    addComponent(SolidCubeBuildComponent(
+        width: size,
+        height: size,
+        depth: size,
+        color: color));
     addComponent(ColorDrawComponent(DrawMode.triangles));
   }
 }
