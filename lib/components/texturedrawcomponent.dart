@@ -1,34 +1,40 @@
-import 'dart:web_gl';
-
-import 'package:gamo_dart/components/gameobjectcomponent.dart';
 import 'package:gamo_dart/gamo.dart';
 import 'package:gamo_dart/shaders/shader.dart';
+import 'package:gamo_dart/shaders/texture.dart';
 import 'package:gamo_dart/shaders/vertex.dart';
 import 'package:vector_math/vector_math.dart';
 
-class ColorDrawComponent extends GameObjectComponent {
-  //DrawMode drawMode;
+import 'gameobjectcomponent.dart';
 
+class TextureDrawComponent extends GameObjectComponent {
+  //DrawMode drawMode;
+  Texture texture;
   //ArrayBuffer _buffer;
 
-  ColorDrawComponent();
+  TextureDrawComponent() {
+    texture = Textures.loadTextureFromCanvas(Gamo.gl3d, Gamo.gl2d.canvas);
+  }
 
   @override
   void onDraw(Shader shader, Matrix4 transform) {
     /*if (_buffer == null) {
       _buffer = ArrayBuffer(Gamo.gl3d, drawMode);
     }
+
     if (parentObject.vertices.isEmpty) {
       return;
     }
-    Vertex v = parentObject.vertices.firstWhere((v) => !(v is VertexP3C4),
+
+    Vertex v = parentObject.vertices.firstWhere((v) => !(v is VertexP3T2),
         orElse: () {
           return;
         });
     if (v != null) {
-      throw StateError('Tryed to draw a ${v.runtimeType.toString()} as a P3C4');
-    }
-    _buffer.setData(parentObject.vertices);*/
+      throw StateError('Tryed to draw a ${v.runtimeType.toString()} as a P3T2');
+    }*/
+    texture.bind(Gamo.gl3d);
+    //_buffer.setData(parentObject.vertices);
+
     shader.modelMatrix = transform;
     shader.draw(parentObject.vertexBuffer);
   }

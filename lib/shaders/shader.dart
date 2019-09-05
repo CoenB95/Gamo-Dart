@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'dart:web_gl';
+import 'dart:web_gl' as gl;
 
 import 'package:gamo_dart/shaders/basicshaders.dart';
 import 'package:gamo_dart/shaders/vertex.dart';
@@ -17,30 +17,30 @@ class Attribute {
   int type;
   int get bytes {
     switch (type) {
-      case WebGL.FLOAT: return 4;
+      case gl.WebGL.FLOAT: return 4;
       default: return 0;
     }
   }
 
-  Attribute(this.name, this.size, [this.type = WebGL.FLOAT]);
+  Attribute(this.name, this.size, [this.type = gl.WebGL.FLOAT]);
 }
 
 abstract class Uniform<T> {
   final String name;
-  UniformLocation id;
+  gl.UniformLocation id;
   T value;
   T Function() bindValue;
 
   Uniform(this.name, this.value, [this.bindValue]);
 
-  void _update(RenderingContext gl);
+  void _update(gl.RenderingContext gl);
 }
 
 class Matrix4Uniform extends Uniform<Matrix4> {
   Matrix4Uniform(String name, [Matrix4 Function() valueBind]) : super(name, Matrix4.identity(), valueBind);
 
   @override
-  void _update(RenderingContext gl) {
+  void _update(gl.RenderingContext gl) {
     if (bindValue != null) {
       value = bindValue();
     }
@@ -51,9 +51,24 @@ class Matrix4Uniform extends Uniform<Matrix4> {
   }
 }
 
+class IntegerUniform extends Uniform<int> {
+  IntegerUniform(String name, [int Function() valueBind]) : super(name, 0, valueBind);
+
+  @override
+  void _update(gl.RenderingContext gl) {
+    if (bindValue != null) {
+      value = bindValue();
+    }
+
+    if (value != null) {
+      gl.uniform1i(id, value);
+    }
+  }
+}
+
 class ArrayBuffer {
-  Buffer _buffer;
-  RenderingContext _gl;
+  gl.Buffer _buffer;
+  gl.RenderingContext _gl;
   Float32List _data;
 
   final DrawMode mode;
@@ -69,7 +84,7 @@ class ArrayBuffer {
     if (_buffer == null) {
       return;
     }
-    _gl.bindBuffer(WebGL.ARRAY_BUFFER, _buffer);
+    _gl.bindBuffer(gl.WebGL.ARRAY_BUFFER, _buffer);
   }
 
   void setData(Iterable<Vertex> data) {
@@ -79,18 +94,18 @@ class ArrayBuffer {
     _bind();
     _data = data.map((t) => t.storage()).reduce((l1, l2) => Float32List.fromList(l1 + l2));
     _gl.bufferData(
-        WebGL.ARRAY_BUFFER,
+        gl.WebGL.ARRAY_BUFFER,
         _data,
-        WebGL.STATIC_DRAW);
+        gl.WebGL.STATIC_DRAW);
   }
 
   void _draw() {
     switch (mode) {
       case DrawMode.triangles:
-        _gl.drawArrays(WebGL.TRIANGLES, 0, length);
+        _gl.drawArrays(gl.WebGL.TRIANGLES, 0, length);
         break;
       case DrawMode.triangleStrip:
-        _gl.drawArrays(WebGL.TRIANGLE_STRIP, 0, length);
+        _gl.drawArrays(gl.WebGL.TRIANGLE_STRIP, 0, length);
         break;
       default:
         break;
@@ -98,59 +113,59 @@ class ArrayBuffer {
   }
 }
 
-class ShaderProgram {
-  static ShaderProgram active;
+class Texture {
+  gl.Texture id;
 
-  static ShaderProgram shaderP3C4;
+  void bind(gl.RenderingContext context) {
+    context.bindTexture(gl.WebGL.TEXTURE_2D, id);
+  }
+}
 
-  static Matrix4 modelMatrix = Matrix4.identity();
-  static Matrix4 viewMatrix = Matrix4.identity();
-  static Matrix4 projectionMatrix = Matrix4.identity();
-  static Matrix4 get modelViewMatrix => viewMatrix * modelMatrix;
+class Shader {
+  Matrix4 modelMatrix = Matrix4.identity();
+  Matrix4 viewMatrix = Matrix4.identity();
+  Matrix4 projectionMatrix = Matrix4.identity();
+  Matrix4 get modelViewMatrix => viewMatrix * modelMatrix;
 
-  RenderingContext gl;
+  gl.RenderingContext _context;
 
   List<Attribute> _attributes = [];
   List<Uniform> _uniforms = [];
-  Program _program;
-  Shader _fragShader, _vertShader;
+  gl.Program _program;
+  gl.Shader _fragShader, _vertShader;
 
-  ShaderProgram(this.gl);
-
-  static void initShaders(RenderingContext gl) {
-    shaderP3C4 = ShaderP3C4(gl);
-  }
+  Shader(this._context);
 
   void init(String vertSrc, String fragSrc,
       List<Attribute> attributes, List<Uniform> uniforms) {
     _attributes.addAll(attributes);
     _uniforms.addAll(uniforms);
 
-    _fragShader = gl.createShader(WebGL.FRAGMENT_SHADER);
-    gl.shaderSource(_fragShader, fragSrc);
-    gl.compileShader(_fragShader);
+    _fragShader = _context.createShader(gl.WebGL.FRAGMENT_SHADER);
+    _context.shaderSource(_fragShader, fragSrc);
+    _context.compileShader(_fragShader);
 
-    _vertShader = gl.createShader(WebGL.VERTEX_SHADER);
-    gl.shaderSource(_vertShader, vertSrc);
-    gl.compileShader(_vertShader);
+    _vertShader = _context.createShader(gl.WebGL.VERTEX_SHADER);
+    _context.shaderSource(_vertShader, vertSrc);
+    _context.compileShader(_vertShader);
 
-    _program = gl.createProgram();
-    gl.attachShader(_program, _vertShader);
-    gl.attachShader(_program, _fragShader);
-    gl.linkProgram(_program);
+    _program = _context.createProgram();
+    _context.attachShader(_program, _vertShader);
+    _context.attachShader(_program, _fragShader);
+    _context.linkProgram(_program);
 
-    if (!gl.getProgramParameter(_program, WebGL.LINK_STATUS)) {
+    if (!_context.getProgramParameter(_program, gl.WebGL.LINK_STATUS)) {
       print("Could not initialise shaders");
     }
 
     for (Attribute attrib in attributes) {
-      int attributeLocation = gl.getAttribLocation(_program, attrib.name);
-      gl.enableVertexAttribArray(attributeLocation);
+      int attributeLocation = _context.getAttribLocation(_program, attrib.name);
+      _context.enableVertexAttribArray(attributeLocation);
       attrib.id = attributeLocation;
     }
 
     for (Uniform uniform in uniforms) {
-      UniformLocation uniformLocation = gl.getUniformLocation(_program, uniform.name);
+      gl.UniformLocation uniformLocation = _context.getUniformLocation(_program, uniform.name);
       uniform.id = uniformLocation;
     }
   }
@@ -167,7 +182,7 @@ class ShaderProgram {
     int attributeOffset = 0;
 
     for (Attribute attribute in _attributes) {
-      gl.vertexAttribPointer(attribute.id, attribute.size, WebGL.FLOAT, false,
+      _context.vertexAttribPointer(attribute.id, attribute.size, gl.WebGL.FLOAT, false,
           attributeStride, attributeOffset);
       attributeOffset += attribute.size * attribute.bytes;
     }
@@ -175,12 +190,11 @@ class ShaderProgram {
 
   void _updateUniforms() {
     for (Uniform uniform in _uniforms) {
-      uniform._update(gl);
+      uniform._update(_context);
     }
   }
 
   void use() {
-    gl.useProgram(_program);
-    active = this;
+    _context.useProgram(_program);
   }
 }

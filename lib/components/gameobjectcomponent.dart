@@ -1,4 +1,5 @@
 import 'package:gamo_dart/objects/gameobject.dart';
+import 'package:gamo_dart/shaders/shader.dart';
 import 'package:gamo_dart/shaders/vertex.dart';
 import 'package:vector_math/vector_math.dart';
 
@@ -14,6 +15,6 @@ abstract class GameObjectComponent {
   void onAttach() {}
   List<Vertex> onBuild() { return []; }
   void onDetach() {}
-  void onDraw(Matrix4 transform) {}
+  void onDraw(Shader shader, Matrix4 transform) {}
   void onUpdate(double elapsedSeconds) {}
 }

@@ -1,22 +1,36 @@
-import 'dart:async';
 import 'dart:html';
 import 'dart:web_gl';
 
-import 'package:gamo_dart/objects/gameobjectgroup.dart';
-import 'package:gamo_dart/shaders/shader.dart';
+import 'package:gamo_dart/stage.dart';
 import 'package:vector_math/vector_math.dart';
 
 class Gamo {
-  final GameObjectGroup stage = GameObjectGroup();
+  final Stage stage;
 
-  CanvasElement _canvas;
-  RenderingContext _gl;
+  CanvasElement _canvas2d;
+  CanvasElement _canvas3d;
+  static CanvasRenderingContext2D _gl2d;
+  static RenderingContext _gl3d;
   Set<int> _activeKeys = {};
   double _lastTime = -1;
 
-  Gamo(this._canvas) {
-    _gl = _canvas.getContext3d();
-    ShaderProgram.initShaders(_gl);
+  static CanvasRenderingContext2D get gl2d => _gl2d;
+  static RenderingContext get gl3d => _gl3d;
+  int get width => _canvas3d.width;
+  int get height => _canvas3d.height;
+
+  Gamo(this._canvas2d, this._canvas3d, this.stage) {
+    _gl3d = _canvas3d.getContext3d();
+    _gl2d = _canvas2d.context2D;
+    _gl2d.scale(5, 5);
+    Vector4 color = Colors.purple;
+    _gl2d.setFillColorRgb((color.r * 255).toInt(), (color.g * 255).toInt(), (color.b * 255).toInt());
+    _gl2d.fillRect(0, 0, width, height);
+    color = Colors.black;
+    _gl2d.setFillColorRgb((color.r * 255).toInt(), (color.g * 255).toInt(), (color.b * 255).toInt());
+    _gl2d.fillText('Test text', 10, 10);
+
+    stage.init(_gl3d, width, height);
 
     // Hook into the window's onKeyDown and onKeyUp streams to track key states
     window.onKeyDown.listen((KeyboardEvent event) {
@@ -44,68 +58,26 @@ class Gamo {
     stage.update(elapsedSeconds);
 
     // Basic viewport setup and clearing of the screen
-    _gl.viewport(0, 0, _canvas.width, _canvas.height);
-    _gl.clear(WebGL.COLOR_BUFFER_BIT | WebGL.DEPTH_BUFFER_BIT);
-    _gl.enable(WebGL.DEPTH_TEST);
-    _gl.disable(WebGL.BLEND);
-    _gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    _gl3d.viewport(0, 0, width, height);
+    _gl3d.clear(WebGL.COLOR_BUFFER_BIT | WebGL.DEPTH_BUFFER_BIT);
+    _gl3d.enable(WebGL.DEPTH_TEST);
+    _gl3d.disable(WebGL.BLEND);
+    _gl3d.clearColor(0.0, 0.0, 0.0, 1.0);
 
     // Setup the perspective - you might be wondering why we do this every
     // time, and that will become clear in much later lessons. Just know, you
     // are not crazy for thinking of caching this.
-    ShaderProgram.projectionMatrix =
-        makePerspectiveMatrix(45.0, _canvas.width / _canvas.height, 0.1, 100.0);
-    ShaderProgram.viewMatrix = Matrix4.identity();
-    ShaderProgram.modelMatrix = Matrix4.identity();
+    /*Shader.projectionMatrix =
+        makePerspectiveMatrix(45.0, width / height, 0.1, 100.0);
+    Shader.viewMatrix = Matrix4.identity();
+    Shader.modelMatrix = Matrix4.identity();*/
 
     //TEMP! Should be on separate thread.
     stage.build();
 
-    stage.draw(Matrix4.identity());
+    stage.draw();
   }
 
   /// Test if the given [KeyCode] is active.
   bool isPressed(int code) => _activeKeys.contains(code);
-
-  /// Load the given image at [url] and call [handle] to execute some GL code.
-  /// Return a [Future] to asynchronously notify when the texture is complete.
-  Future<Texture> loadTexture(String url,
-      handle(Texture tex, ImageElement ele)) {
-    var completer = Completer<Texture>();
-    var texture = _gl.createTexture();
-    var element = ImageElement();
-    element.onLoad.listen((e) {
-      handle(texture, element);
-      completer.complete(texture);
-    });
-    element.src = url;
-    return completer.future;
-  }
-
-  /// This is a common handler for [loadTexture]. It will be explained in future
-  /// lessons that require textures.
-  void handleMipMapTexture(Texture texture, ImageElement image) {
-    _gl.pixelStorei(WebGL.UNPACK_FLIP_Y_WEBGL, 1);
-    _gl.bindTexture(WebGL.TEXTURE_2D, texture);
-    _gl.texImage2D(
-      WebGL.TEXTURE_2D,
-      0,
-      WebGL.RGBA,
-      WebGL.RGBA,
-      WebGL.UNSIGNED_BYTE,
-      image,
-    );
-    _gl.texParameteri(
-      WebGL.TEXTURE_2D,
-      WebGL.TEXTURE_MAG_FILTER,
-      WebGL.LINEAR,
-    );
-    _gl.texParameteri(
-      WebGL.TEXTURE_2D,
-      WebGL.TEXTURE_MIN_FILTER,
-      WebGL.LINEAR_MIPMAP_NEAREST,
-    );
-    _gl.generateMipmap(WebGL.TEXTURE_2D);
-    _gl.bindTexture(WebGL.TEXTURE_2D, null);
-  }
 }

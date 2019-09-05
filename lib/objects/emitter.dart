@@ -10,6 +10,8 @@ class Emitter extends GameObjectGroup {
   double _lastEmit = 0;
   Random _random = Random();
 
+  Emitter() : super.embedded();
+
   @override
   void update(double elapsedSeconds) {
     super.update(elapsedSeconds);

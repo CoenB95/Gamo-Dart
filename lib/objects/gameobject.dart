@@ -1,4 +1,5 @@
 import 'package:gamo_dart/components/gameobjectcomponent.dart';
+import 'package:gamo_dart/gamo.dart';
 import 'package:gamo_dart/objects/gameobjectgroup.dart';
 import 'package:gamo_dart/shaders/shader.dart';
 import 'package:gamo_dart/shaders/vertex.dart';
@@ -8,9 +9,11 @@ abstract class GameObject {
   Vector3 position;
   Quaternion orientation;
   Vector3 scale;
-  GameObjectGroup get parentGroup => _parentGroup;
 
-  List<Vertex> vertices = [];
+  GameObjectGroup get parentGroup => _parentGroup;
+  Vector3 get globalPosition => _parentGroup?.globalPosition ?? Vector3.zero() + position;
+
+  ArrayBuffer vertexBuffer;
   bool isDirty = true;
 
   GameObjectGroup _parentGroup;
@@ -31,16 +34,25 @@ abstract class GameObject {
     _components.add(component);
   }
 
-  void build({bool force = false}) {
+  Iterable<Vertex> build({bool force = false}) {
+    List<Vertex> vertices = [];
     if (isDirty || force) {
-      vertices.clear();
       vertices.addAll(_components.map((c) => c.onBuild()).expand((e) => e));
+      //vertices.map((v) => v + offset);
+      //if (offset == null) {
+        if (vertexBuffer == null) {
+          //Todo: solve hardcoded.
+          vertexBuffer = ArrayBuffer(Gamo.gl3d, DrawMode.triangles);
+        }
+        vertexBuffer.setData(vertices);
+      //}
     }
+    return vertices;
   }
 
-  void draw(Matrix4 transform) {
-    Matrix4 innerTransform = transform * Matrix4.compose(position, orientation, scale);
-    _components.forEach((c) => c.onDraw(innerTransform));
+  void draw(Shader shader) {
+    Matrix4 innerTransform = Matrix4.identity();//transform * Matrix4.compose(position, orientation, scale);
+    _components.forEach((c) => c.onDraw(shader, innerTransform));
   }
 
   List<GameObjectComponent> getComponents() {
