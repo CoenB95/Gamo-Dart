@@ -15,6 +15,6 @@ abstract class GameObjectComponent {
   void onAttach() {}
   List<Vertex> onBuild() { return []; }
   void onDetach() {}
-  void onDraw(Shader shader, Matrix4 transform) {}
+  void onDraw(Shader shader, Matrix4 parentTransform) {}
   void onUpdate(double elapsedSeconds) {}
 }

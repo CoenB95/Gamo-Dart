@@ -18,38 +18,12 @@ class GameObjectGroup extends GameObject {
   void addObject(GameObject object) {
     object.setParentGroup(this);
     objects.add(object);
+    isDirty = true;
   }
 
   void addObjects(Iterable<GameObject> objects) {
     objects.forEach((o) => addObject(o));
   }
-
-  /*@override
-  Iterable<Vertex> build({bool force = false, Vector3 offset}) {
-    List<Vertex> vertices = [];
-    if (isDirty || force) {
-      vertices.addAll(objects.map((o) => o.build(
-          force: true,
-          offset: offset ?? Vector3.zero()
-      )).expand((e) => e));
-      vertices.map((v) => v + offset);
-      if (offset == null) {
-        if (vertexBuffer == null) {
-          vertexBuffer = ArrayBuffer(Gamo.gl3d, DrawMode.triangles);
-        }
-        vertexBuffer.setData(vertices);
-      }
-    }
-    return vertices;
-  }*/
-
-  /*@override
-  void draw(Matrix4 transform) {
-    super.draw(transform);
-
-    Matrix4 innerTransform = transform * Matrix4.compose(position, orientation, scale);
-    objects.forEach((o) => o.draw(innerTransform));
-  }*/
 
   @override
   void update(double elapsedSeconds) {
@@ -86,11 +60,6 @@ class EmbeddedComponent extends GameObjectComponent {
   List<Vertex> onBuild() {
     List<Vertex> vertices = [];
     if (parentObject is GameObjectGroup) {
-      /*vertices.addAll((parentObject as GameObjectGroup).objects.map((o) {
-        return o.getComponents()
-            .map((c) => c.onBuild())
-            .expand((e) => e);
-      }).expand((e) => e));*/
       (parentObject as GameObjectGroup).objects.forEach((o) => o.build(force: true));
       return vertices;
     }
@@ -98,12 +67,12 @@ class EmbeddedComponent extends GameObjectComponent {
   }
 
   @override
-  void onDraw(Shader shader, Matrix4 transform) {
+  void onDraw(Shader shader, Matrix4 parentTransform) {
     if (parentObject is GameObjectGroup) {
-      Matrix4 innerTransform = transform * Matrix4.compose(
+      Matrix4 transform = parentTransform * Matrix4.compose(
           parentObject.position, parentObject.orientation, parentObject.scale);
       (parentObject as GameObjectGroup).objects.forEach((o) {
-          o.getComponents().forEach((c) => c.onDraw(shader, innerTransform));
+          o.getComponents().forEach((c) => c.onDraw(shader, transform));
       });
     }
   }

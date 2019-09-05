@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 import 'dart:web_gl' as gl;
 
-import 'package:gamo_dart/shaders/basicshaders.dart';
 import 'package:gamo_dart/shaders/vertex.dart';
 import 'package:vector_math/vector_math.dart';
 
@@ -71,10 +70,9 @@ class ArrayBuffer {
   gl.RenderingContext _gl;
   Float32List _data;
 
-  final DrawMode mode;
   int get length => _data.length;
 
-  ArrayBuffer(this._gl, this.mode, [Iterable<Vertex> data]) {
+  ArrayBuffer(this._gl, [Iterable<Vertex> data]) {
     if (data != null) {
       setData(data);
     }
@@ -99,7 +97,7 @@ class ArrayBuffer {
         gl.WebGL.STATIC_DRAW);
   }
 
-  void _draw() {
+  void _draw(DrawMode mode) {
     switch (mode) {
       case DrawMode.triangles:
         _gl.drawArrays(gl.WebGL.TRIANGLES, 0, length);
@@ -170,11 +168,14 @@ class Shader {
     }
   }
 
-  void draw(ArrayBuffer buffer) {
+  void draw(ArrayBuffer buffer, DrawMode mode) {
+    if (buffer == null) {
+      return;
+    }
     buffer._bind();
     _bindAttributeBuffer();
     _updateUniforms();
-    buffer._draw();
+    buffer._draw(mode);
   }
 
   void _bindAttributeBuffer() {

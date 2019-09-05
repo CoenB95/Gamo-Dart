@@ -14,7 +14,14 @@ abstract class GameObject {
   Vector3 get globalPosition => _parentGroup?.globalPosition ?? Vector3.zero() + position;
 
   ArrayBuffer vertexBuffer;
-  bool isDirty = true;
+  bool _dirty = true;
+  bool get isDirty => _dirty;
+  set isDirty(bool val) {
+    if (val) {
+      _dirty = true;
+      _parentGroup?._dirty = true;
+    }
+  }
 
   GameObjectGroup _parentGroup;
   List<GameObjectComponent> _components = [];
@@ -38,22 +45,19 @@ abstract class GameObject {
     List<Vertex> vertices = [];
     if (isDirty || force) {
       vertices.addAll(_components.map((c) => c.onBuild()).expand((e) => e));
-      //vertices.map((v) => v + offset);
-      //if (offset == null) {
         if (vertexBuffer == null) {
-          //Todo: solve hardcoded.
-          vertexBuffer = ArrayBuffer(Gamo.gl3d, DrawMode.triangles);
+          vertexBuffer = ArrayBuffer(Gamo.gl3d);
         }
         if (vertices.isNotEmpty) {
           vertexBuffer.setData(vertices);
         }
-      //}
+        isDirty = false;
     }
     return vertices;
   }
 
   void draw(Shader shader) {
-    Matrix4 innerTransform = Matrix4.identity();//transform * Matrix4.compose(position, orientation, scale);
+    Matrix4 innerTransform = Matrix4.identity();
     _components.forEach((c) => c.onDraw(shader, innerTransform));
   }
 
