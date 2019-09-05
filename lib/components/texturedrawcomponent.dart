@@ -14,7 +14,7 @@ class TexturedTrianglesDrawComponent extends GameObjectComponent {
 
   @override
   void onDraw(Shader shader, Matrix4 parentTransform) {
-    texture.bind(Gamo.gl3d);
+    texture.use(Gamo.gl3d, 0);
 
     Matrix4 transform = parentTransform * Matrix4.compose(
         parentObject.position, parentObject.orientation, parentObject.scale);

@@ -114,8 +114,21 @@ class ArrayBuffer {
 class Texture {
   gl.Texture id;
 
-  void bind(gl.RenderingContext context) {
+  void _bind(gl.RenderingContext context) {
     context.bindTexture(gl.WebGL.TEXTURE_2D, id);
+  }
+
+  void use(gl.RenderingContext context, int index) {
+    switch (index) {
+      case 1:
+        context.activeTexture(gl.WebGL.TEXTURE1);
+        break;
+      case 0:
+      default:
+        context.activeTexture(gl.WebGL.TEXTURE0);
+        break;
+    }
+    _bind(context);
   }
 }
 
@@ -158,6 +171,9 @@ class Shader {
 
     for (Attribute attrib in attributes) {
       int attributeLocation = _context.getAttribLocation(_program, attrib.name);
+      if (attributeLocation < 0) {
+        throw ArgumentError("Could not find attribute '${attrib.name}'");
+      }
       _context.enableVertexAttribArray(attributeLocation);
       attrib.id = attributeLocation;
     }
