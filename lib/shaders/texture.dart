@@ -6,6 +6,7 @@ class Textures {
   static Texture loadTextureFromCanvas(gl.RenderingContext context, dynamic image) {
     gl.Texture texture = context.createTexture();
     context.bindTexture(gl.WebGL.TEXTURE_2D, texture);
+    context.pixelStorei(gl.WebGL.UNPACK_FLIP_Y_WEBGL, 1);
     context.texImage2D(
       gl.WebGL.TEXTURE_2D,
       0,
@@ -16,7 +17,7 @@ class Textures {
     );
     context.texParameteri(gl.WebGL.TEXTURE_2D, gl.WebGL.TEXTURE_MAG_FILTER, gl.WebGL.NEAREST);
     context.texParameteri(gl.WebGL.TEXTURE_2D, gl.WebGL.TEXTURE_MIN_FILTER, gl.WebGL.NEAREST);
-    //context.generateMipmap(gl.WebGL.TEXTURE_2D);
+    context.generateMipmap(gl.WebGL.TEXTURE_2D);
     context.bindTexture(gl.WebGL.TEXTURE_2D, null);
 
     return Texture()..id = texture;
