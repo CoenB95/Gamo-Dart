@@ -86,11 +86,13 @@ class EmbeddedComponent extends GameObjectComponent {
   List<Vertex> onBuild() {
     List<Vertex> vertices = [];
     if (parentObject is GameObjectGroup) {
-      vertices.addAll((parentObject as GameObjectGroup).objects.map((o) {
+      /*vertices.addAll((parentObject as GameObjectGroup).objects.map((o) {
         return o.getComponents()
             .map((c) => c.onBuild())
             .expand((e) => e);
-      }).expand((e) => e));
+      }).expand((e) => e));*/
+      (parentObject as GameObjectGroup).objects.forEach((o) => o.build(force: true));
+      return vertices;
     }
     return null;
   }
@@ -100,8 +102,11 @@ class EmbeddedComponent extends GameObjectComponent {
     if (parentObject is GameObjectGroup) {
       Matrix4 innerTransform = transform * Matrix4.compose(
           parentObject.position, parentObject.orientation, parentObject.scale);
-      (parentObject as GameObjectGroup).objects.forEach((o) =>
-          o.getComponents().forEach((c) => c.onDraw(shader, innerTransform)));
+      (parentObject as GameObjectGroup).objects.forEach((o) {
+        Matrix4 childTransform = innerTransform * Matrix4.compose(
+            o.position, o.orientation, o.scale);
+          o.getComponents().forEach((c) => c.onDraw(shader, childTransform));
+      });
     }
   }
 }

@@ -44,7 +44,9 @@ abstract class GameObject {
           //Todo: solve hardcoded.
           vertexBuffer = ArrayBuffer(Gamo.gl3d, DrawMode.triangles);
         }
-        vertexBuffer.setData(vertices);
+        if (vertices.isNotEmpty) {
+          vertexBuffer.setData(vertices);
+        }
       //}
     }
     return vertices;

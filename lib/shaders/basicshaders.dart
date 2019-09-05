@@ -40,7 +40,7 @@ class ShaderP3T2 extends Shader {
   final Uniform _perspectiveMatrix = Matrix4Uniform('uPMatrix');
   final Uniform _textureSampler = IntegerUniform('uTextureSampler');
   final Attribute _location = Attribute('aVertexPosition', 3);
-  final Attribute _texCoord = Attribute('aVertexTexCoord', 4);
+  final Attribute _texCoord = Attribute('aVertexTexCoord', 2);
 
   final String _vertSrc = '''
           attribute vec3 aVertexPosition;
@@ -58,7 +58,7 @@ class ShaderP3T2 extends Shader {
           uniform sampler2D uTextureSampler;
           varying vec2 vVertexTexCoord;
           void main(void) {
-              gl_FragColor = texture(uTextureSampler, vVertexTexCoord);
+              gl_FragColor = texture2D(uTextureSampler, vVertexTexCoord);
           }
         ''';
 

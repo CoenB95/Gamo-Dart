@@ -20,6 +20,8 @@ abstract class Stage {
     _texturedShader = ShaderP3T2(context);
     this.width = width;
     this.height = height;
+
+    onStart();
   }
 
   void onStart();
