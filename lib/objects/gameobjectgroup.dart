@@ -103,9 +103,7 @@ class EmbeddedComponent extends GameObjectComponent {
       Matrix4 innerTransform = transform * Matrix4.compose(
           parentObject.position, parentObject.orientation, parentObject.scale);
       (parentObject as GameObjectGroup).objects.forEach((o) {
-        Matrix4 childTransform = innerTransform * Matrix4.compose(
-            o.position, o.orientation, o.scale);
-          o.getComponents().forEach((c) => c.onDraw(shader, childTransform));
+          o.getComponents().forEach((c) => c.onDraw(shader, innerTransform));
       });
     }
   }

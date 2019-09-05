@@ -29,7 +29,9 @@ class ColorDrawComponent extends GameObjectComponent {
       throw StateError('Tryed to draw a ${v.runtimeType.toString()} as a P3C4');
     }
     _buffer.setData(parentObject.vertices);*/
-    shader.modelMatrix = transform;
+    Matrix4 innerTransform = transform * Matrix4.compose(
+        parentObject.position, parentObject.orientation, parentObject.scale);
+    shader.modelMatrix = innerTransform;
     shader.draw(parentObject.vertexBuffer);
   }
 }

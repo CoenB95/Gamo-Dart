@@ -35,7 +35,9 @@ class TextureDrawComponent extends GameObjectComponent {
     texture.bind(Gamo.gl3d);
     //_buffer.setData(parentObject.vertices);
 
-    shader.modelMatrix = transform;
+    Matrix4 innerTransform = transform * Matrix4.compose(
+        parentObject.position, parentObject.orientation, parentObject.scale);
+    shader.modelMatrix = innerTransform;
     shader.draw(parentObject.vertexBuffer);
   }
 }
