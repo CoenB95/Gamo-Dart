@@ -22,12 +22,17 @@ class Gamo {
   Gamo(this._canvas2d, this._canvas3d, this.stage) {
     _gl3d = _canvas3d.getContext3d();
     _gl2d = _canvas2d.context2D;
-    _gl2d.scale(5, 5);
     Vector4 color = Colors.purple;
     _gl2d.setFillColorRgb((color.r * 255).toInt(), (color.g * 255).toInt(), (color.b * 255).toInt());
-    _gl2d.fillRect(0, 0, width, height);
+    _gl2d.fillRect(0, 0, width / 2, height / 2);
+    _gl2d.fillRect(width / 2, height / 2, width / 2, height / 2);
     color = Colors.black;
     _gl2d.setFillColorRgb((color.r * 255).toInt(), (color.g * 255).toInt(), (color.b * 255).toInt());
+    _gl2d.fillRect(width / 2, 0, width / 2, height / 2);
+    _gl2d.fillRect(0, height / 2, width / 2, height / 2);
+    color = Colors.white;
+    _gl2d.setFillColorRgb((color.r * 255).toInt(), (color.g * 255).toInt(), (color.b * 255).toInt());
+    _gl2d.scale(10, 10);
     _gl2d.fillText('Test text', 10, 10);
 
     stage.init(_gl3d, width, height);
