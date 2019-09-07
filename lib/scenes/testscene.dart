@@ -17,8 +17,10 @@ class TestScene extends Stage {
     cube2.position = Vector3(1.5, 0.0, -7.0);
     colored.addObject(cube2);
 
-    Emitter emitter = Emitter();
-    emitter.position = Vector3(0, 0, -7);
-    colored.addObject(emitter);
+    for (int i = 0; i < 5; i++) {
+      Emitter nozle = Emitter();
+      nozle.position = Vector3(-2.5 + i / 5 * 5, -3, -7);
+      colored.addObject(nozle);
+    }
   }
 }

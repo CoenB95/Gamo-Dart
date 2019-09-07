@@ -2,15 +2,28 @@ import 'package:gamo_dart/components/gameobjectcomponent.dart';
 import 'package:gamo_dart/shaders/vertex.dart';
 import 'package:vector_math/vector_math.dart';
 
-class PaneBuildComponent extends GameObjectComponent {
+class SolidPaneBuildComponent extends GameObjectComponent {
+  double width;
+  double height;
+  Vector4 color;
+
+  double get _hw => width / 2;
+  double get _hh => height / 2;
+
+  SolidPaneBuildComponent({this.width = 1, this.height = 1, this.color});
+
   @override
   List<Vertex> onBuild() {
-    return [
-      VertexP3C4(Vector3( 1,  1, 0), Colors.white),
-      VertexP3C4(Vector3(-1,  1, 0), Colors.white),
-      VertexP3C4(Vector3( 1, -1, 0), Colors.white),
-      VertexP3C4(Vector3(-1, -1, 0), Colors.white)
-    ];
+    List<Vertex> vertices = [];
+    vertices.addAll([
+      VertexP3C4(Vector3(_hw, _hh, 0), color),
+      VertexP3C4(Vector3(-_hw, _hh, 0), color),
+      VertexP3C4(Vector3(-_hw, -_hh, 0), color),
+      VertexP3C4(Vector3(_hw, _hh, 0), color),
+      VertexP3C4(Vector3(-_hw, -_hh, 0), color),
+      VertexP3C4(Vector3(_hw, -_hh, 0), color)
+    ]);
+    return vertices;
   }
 }
 
