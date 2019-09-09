@@ -9,6 +9,10 @@ class ForceComponent extends GameObjectComponent {
     velocity += force;
   }
 
+  void setForce(Vector3 force) {
+    velocity = force;
+  }
+
   @override
   void onUpdate(double elapsedSeconds) {
     parentObject.position += (velocity + acceleration / 2 * elapsedSeconds) * elapsedSeconds;

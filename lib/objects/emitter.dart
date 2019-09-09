@@ -12,8 +12,9 @@ import 'package:vector_math/vector_math.dart';
 Random _random = Random();
 
 class Emitter extends GameObjectGroup {
-  double _emitInterval = 0.05;
+  double _emitInterval = 0.1;
   double _lastEmit = 0;
+  List<Particle> particles = [];
 
   Emitter() : super.embedded();
 
@@ -23,20 +24,24 @@ class Emitter extends GameObjectGroup {
 
     _lastEmit -= elapsedSeconds;
     if (_lastEmit < 0) {
+      Particle particle = particles.firstWhere((p) => p.done,
+          orElse: () {
+            Particle p = Particle(
+                size: 0.1,
+                color: Colors.blue);
+            p.forceComponent.acceleration = Vector3(0, -10, 0);
+
+            particles.add(p);
+            addObject(p);
+            return p;
+          });
       Vector3 direction = Vector3(0, 1, 0).normalized();
       Vector3 jitter = (Vector3.all(0.5) - Vector3.random(_random)) * 0.05;
       double power = 10.0;
       Vector3 force = (direction + jitter) * power;
 
-      GameObject particle = Particle(
-          size: 0.1,
-          color: Colors.blue);
-      particle.addComponent(DespawnComponent(2));
-      particle.addComponent(ForceComponent()
-        ..addForce(force)
-        ..acceleration = Vector3(0, -10, 0));
-      //particle.position = pos;
-      addObject(particle);
+      particle.forceComponent.setForce(force);
+      particle.reset();
 
       _lastEmit = _emitInterval;
     }
@@ -44,7 +49,15 @@ class Emitter extends GameObjectGroup {
 }
 
 class Particle extends GameObject {
+  bool done;
+  DespawnComponent despawnComponent;
+  ForceComponent forceComponent;
+
   Particle({double size = 1, Vector4 color}) {
+    despawnComponent = DespawnComponent(2, onDespawn: () => done = true);
+    forceComponent = ForceComponent();
+    reset();
+
     addComponent(SpinComponent(Quaternion.random(_random)));
     addComponent(SolidPaneBuildComponent(
       width: size,
@@ -52,5 +65,13 @@ class Particle extends GameObject {
       color: color,
     ));
     addComponent(ColoredTrianglesDrawComponent());
+    addComponent(despawnComponent);
+    addComponent(forceComponent);
+  }
+
+  void reset() {
+    position = Vector3.zero();
+    despawnComponent.resetTimer(2);
+    done = false;
   }
 }
