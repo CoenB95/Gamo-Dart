@@ -32,14 +32,14 @@ abstract class Uniform<T> {
 
   Uniform(this.name, this.value, [this.bindValue]);
 
-  void _update(gl.RenderingContext gl);
+  void _update(gl.RenderingContext2 gl);
 }
 
 class Matrix4Uniform extends Uniform<Matrix4> {
   Matrix4Uniform(String name, [Matrix4 Function() valueBind]) : super(name, Matrix4.identity(), valueBind);
 
   @override
-  void _update(gl.RenderingContext gl) {
+  void _update(gl.RenderingContext2 gl) {
     if (bindValue != null) {
       value = bindValue();
     }
@@ -54,7 +54,7 @@ class IntegerUniform extends Uniform<int> {
   IntegerUniform(String name, [int Function() valueBind]) : super(name, 0, valueBind);
 
   @override
-  void _update(gl.RenderingContext gl) {
+  void _update(gl.RenderingContext2 gl) {
     if (bindValue != null) {
       value = bindValue();
     }
@@ -67,7 +67,7 @@ class IntegerUniform extends Uniform<int> {
 
 class ArrayBuffer {
   gl.Buffer _buffer;
-  gl.RenderingContext _gl;
+  gl.RenderingContext2 _gl;
   Float32List _data;
 
   int get length => _data.length;
@@ -120,11 +120,11 @@ class ArrayBuffer {
 class Texture {
   gl.Texture id;
 
-  void _bind(gl.RenderingContext context) {
+  void _bind(gl.RenderingContext2 context) {
     context.bindTexture(gl.WebGL.TEXTURE_2D, id);
   }
 
-  void use(gl.RenderingContext context, int index) {
+  void use(gl.RenderingContext2 context, int index) {
     switch (index) {
       case 1:
         context.activeTexture(gl.WebGL.TEXTURE1);
@@ -144,7 +144,7 @@ class Shader {
   Matrix4 projectionMatrix = Matrix4.identity();
   Matrix4 get modelViewMatrix => viewMatrix * modelMatrix;
 
-  gl.RenderingContext _context;
+  gl.RenderingContext2 _context;
 
   List<Attribute> _attributes = [];
   List<Uniform> _uniforms = [];

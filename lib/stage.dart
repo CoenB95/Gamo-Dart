@@ -15,7 +15,7 @@ abstract class Stage {
   Shader _coloredShader;
   Shader _texturedShader;
 
-  void init(gl.RenderingContext context, int width, int height) {
+  void init(gl.RenderingContext2 context, int width, int height) {
     _coloredShader = ShaderP3C4(context);
     _texturedShader = ShaderP3T2(context);
     this.width = width;

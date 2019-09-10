@@ -3,7 +3,7 @@ import 'dart:web_gl' as gl;
 import 'package:gamo_dart/shaders/shader.dart';
 
 class Textures {
-  static Texture loadTextureFromCanvas(gl.RenderingContext context, dynamic image) {
+  static Texture loadTextureFromCanvas(gl.RenderingContext2 context, dynamic image) {
     gl.Texture texture = context.createTexture();
     context.bindTexture(gl.WebGL.TEXTURE_2D, texture);
     context.pixelStorei(gl.WebGL.UNPACK_FLIP_Y_WEBGL, 1);

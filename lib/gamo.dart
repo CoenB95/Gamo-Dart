@@ -10,17 +10,17 @@ class Gamo {
   CanvasElement _canvas2d;
   CanvasElement _canvas3d;
   static CanvasRenderingContext2D _gl2d;
-  static RenderingContext _gl3d;
+  static RenderingContext2 _gl3d;
   Set<int> _activeKeys = {};
   double _lastTime = -1;
 
   static CanvasRenderingContext2D get gl2d => _gl2d;
-  static RenderingContext get gl3d => _gl3d;
+  static RenderingContext2 get gl3d => _gl3d;
   int get width => _canvas3d.width;
   int get height => _canvas3d.height;
 
   Gamo(this._canvas2d, this._canvas3d, this.stage) {
-    _gl3d = _canvas3d.getContext3d();
+    _gl3d = _canvas3d.getContext('webgl2');
     _gl2d = _canvas2d.context2D;
     Vector4 color = Colors.purple;
     _gl2d.setFillColorRgb((color.r * 255).toInt(), (color.g * 255).toInt(), (color.b * 255).toInt());

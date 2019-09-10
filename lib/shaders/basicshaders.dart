@@ -27,7 +27,7 @@ class ShaderP3C4 extends Shader {
           }
         ''';
 
-  ShaderP3C4(gl.RenderingContext gl) : super(gl) {
+  ShaderP3C4(gl.RenderingContext2 gl) : super(gl) {
     _modelViewMatrix.bindValue = () => modelViewMatrix;
     _perspectiveMatrix.bindValue = () => projectionMatrix;
     init(_vertSrc, _fragSrc, [_location, _color],
@@ -62,7 +62,7 @@ class ShaderP3T2 extends Shader {
           }
         ''';
 
-  ShaderP3T2(gl.RenderingContext gl) : super(gl) {
+  ShaderP3T2(gl.RenderingContext2 gl) : super(gl) {
     _modelViewMatrix.bindValue = () => modelViewMatrix;
     _perspectiveMatrix.bindValue = () => projectionMatrix;
     init(_vertSrc, _fragSrc, [_location, _texCoord],
