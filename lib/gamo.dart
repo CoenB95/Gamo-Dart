@@ -54,33 +54,37 @@ class Gamo {
   /// call us back every time its ready for a new frame to be rendered. The [time]
   /// parameter is an increasing value based on when the animation loop started.
   void frame(time) {
-    window.animationFrame.then(frame);
+    try {
+      _lastTime = _lastTime < 0 ? time : _lastTime;
+      double elapsedSeconds = (time - _lastTime) / 1000.0;
+      _lastTime = time;
 
-    _lastTime = _lastTime < 0 ? time : _lastTime;
-    double elapsedSeconds = (time - _lastTime) / 1000.0;
-    _lastTime = time;
+      stage.update(elapsedSeconds);
 
-    stage.update(elapsedSeconds);
+      // Basic viewport setup and clearing of the screen
+      _gl3d.viewport(0, 0, width, height);
+      _gl3d.clear(WebGL.COLOR_BUFFER_BIT | WebGL.DEPTH_BUFFER_BIT);
+      _gl3d.enable(WebGL.DEPTH_TEST);
+      _gl3d.disable(WebGL.BLEND);
+      _gl3d.clearColor(0.0, 0.0, 0.0, 1.0);
 
-    // Basic viewport setup and clearing of the screen
-    _gl3d.viewport(0, 0, width, height);
-    _gl3d.clear(WebGL.COLOR_BUFFER_BIT | WebGL.DEPTH_BUFFER_BIT);
-    _gl3d.enable(WebGL.DEPTH_TEST);
-    _gl3d.disable(WebGL.BLEND);
-    _gl3d.clearColor(0.0, 0.0, 0.0, 1.0);
-
-    // Setup the perspective - you might be wondering why we do this every
-    // time, and that will become clear in much later lessons. Just know, you
-    // are not crazy for thinking of caching this.
-    /*Shader.projectionMatrix =
+      // Setup the perspective - you might be wondering why we do this every
+      // time, and that will become clear in much later lessons. Just know, you
+      // are not crazy for thinking of caching this.
+      /*Shader.projectionMatrix =
         makePerspectiveMatrix(45.0, width / height, 0.1, 100.0);
     Shader.viewMatrix = Matrix4.identity();
     Shader.modelMatrix = Matrix4.identity();*/
 
-    //TEMP! Should be on separate thread.
-    stage.build();
+      //TEMP! Should be on separate thread.
+      stage.build();
 
-    stage.draw();
+      stage.draw();
+
+      window.animationFrame.then(frame);
+    } on Error catch (e) {
+      rethrow;
+    }
   }
 
   /// Test if the given [KeyCode] is active.

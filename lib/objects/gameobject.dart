@@ -44,14 +44,14 @@ abstract class GameObject {
   Iterable<Vertex> build({bool force = false}) {
     List<Vertex> vertices = [];
     if (isDirty || force) {
-      vertices.addAll(_components.map((c) => c.onBuild()).expand((e) => e));
-        if (vertexBuffer == null) {
-          vertexBuffer = ArrayBuffer(Gamo.gl3d);
-        }
-        if (vertices.isNotEmpty) {
-          vertexBuffer.setData(vertices);
-        }
-        isDirty = false;
+      _components.forEach((c) {
+        vertices.addAll(c.onBuild());
+      });
+      if (vertexBuffer == null) {
+        vertexBuffer = ArrayBuffer(Gamo.gl3d);
+      }
+      vertexBuffer.setData(vertices);
+      isDirty = false;
     }
     return vertices;
   }

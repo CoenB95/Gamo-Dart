@@ -45,11 +45,12 @@ class StandaloneComponent extends GameObjectComponent {
   List<Vertex> onBuild() {
     List<Vertex> vertices = [];
     if (parentObject is GameObjectGroup) {
-      vertices.addAll((parentObject as GameObjectGroup).objects.map((o) {
-        return o.getComponents()
-            .map((c) => c.onBuild().map((v) => v + o.position))
-            .expand((e) => e);
-      }).expand((e) => e));
+      (parentObject as GameObjectGroup).objects.forEach((o) {
+        o.getComponents().forEach((c) {
+          vertices.addAll(c.onBuild().map((v) => v + o.position));
+        });
+      });
+      return vertices;
     }
     return null;
   }

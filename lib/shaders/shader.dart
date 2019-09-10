@@ -86,6 +86,9 @@ class ArrayBuffer {
   }
 
   void setData(Iterable<Vertex> data) {
+    if (data == null || data.isEmpty) {
+      return;
+    }
     if (_buffer == null) {
       _buffer = _gl.createBuffer();
     }
@@ -98,6 +101,9 @@ class ArrayBuffer {
   }
 
   void _draw(DrawMode mode) {
+    if (_data == null || _data.isEmpty) {
+      return;
+    }
     switch (mode) {
       case DrawMode.triangles:
         _gl.drawArrays(gl.WebGL.TRIANGLES, 0, length);

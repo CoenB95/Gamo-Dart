@@ -16,7 +16,9 @@ class Emitter extends GameObjectGroup {
   double _lastEmit = 0;
   List<Particle> particles = [];
 
-  Emitter() : super.embedded();
+  Emitter() : super.standalone() {
+    addComponent(ColoredTrianglesDrawComponent());
+  }
 
   @override
   void update(double elapsedSeconds) {
