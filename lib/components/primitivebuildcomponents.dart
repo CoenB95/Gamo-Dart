@@ -2,6 +2,19 @@ import 'package:gamo_dart/components/gameobjectcomponent.dart';
 import 'package:gamo_dart/shaders/vertex.dart';
 import 'package:vector_math/vector_math.dart';
 
+class SolidPointBuildComponent extends GameObjectComponent {
+  Vector4 color = Colors.white;
+
+  SolidPointBuildComponent([this.color]);
+
+  @override
+  List<Vertex> onBuild() {
+    List<Vertex> vertices = [];
+    vertices.add(VertexP3C4(Vector3(0, 0, 0), color));
+    return vertices;
+  }
+}
+
 class SolidPaneBuildComponent extends GameObjectComponent {
   double width;
   double height;

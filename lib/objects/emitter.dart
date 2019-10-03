@@ -17,7 +17,7 @@ class Emitter extends GameObjectGroup {
   List<Particle> particles = [];
 
   Emitter() : super.standalone() {
-    addComponent(ColoredTrianglesDrawComponent());
+    addComponent(ColoredPointsDrawComponent());
   }
 
   @override
@@ -61,12 +61,8 @@ class Particle extends GameObject {
     reset();
 
     addComponent(SpinComponent(Quaternion.random(_random)));
-    addComponent(SolidPaneBuildComponent(
-      width: size,
-      height: size,
-      color: color,
-    ));
-    addComponent(ColoredTrianglesDrawComponent());
+    addComponent(SolidPointBuildComponent(color));
+    addComponent(ColoredPointsDrawComponent());
     addComponent(despawnComponent);
     addComponent(forceComponent);
   }

@@ -5,6 +5,7 @@ import 'package:gamo_dart/shaders/vertex.dart';
 import 'package:vector_math/vector_math.dart';
 
 enum DrawMode {
+  points,
   triangles,
   triangleStrip
 }
@@ -105,6 +106,9 @@ class ArrayBuffer {
       return;
     }
     switch (mode) {
+      case DrawMode.points:
+        _gl.drawArrays(gl.WebGL.POINTS, 0, length);
+        break;
       case DrawMode.triangles:
         _gl.drawArrays(gl.WebGL.TRIANGLES, 0, length);
         break;
