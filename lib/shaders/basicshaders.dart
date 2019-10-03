@@ -16,7 +16,7 @@ class ShaderP3C4 extends Shader {
           varying vec4 color;
           void main(void) {
               gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-              gl_PointSize = 5.0;
+              gl_PointSize = 10.0;
               color = aVertexColor;
           }
         ''';

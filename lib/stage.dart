@@ -24,6 +24,7 @@ abstract class Stage {
     onStart();
   }
 
+  void onUpdate(double elapsedSeconds);
   void onStart();
 
   void build() {
@@ -46,6 +47,7 @@ abstract class Stage {
   }
 
   void update(double elapsedSeconds) {
+    onUpdate(elapsedSeconds);
     colored.update(elapsedSeconds);
     textured.update(elapsedSeconds);
   }

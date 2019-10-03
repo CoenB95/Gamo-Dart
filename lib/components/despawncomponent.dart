@@ -1,17 +1,17 @@
 import 'package:gamo_dart/components/gameobjectcomponent.dart';
 
 class DespawnComponent extends GameObjectComponent {
-  double _remainingSeconds = 0;
+  double remainingSeconds = 0;
   Function onDespawn;
 
-  DespawnComponent(this._remainingSeconds, {this.onDespawn});
+  DespawnComponent(this.remainingSeconds, {this.onDespawn});
 
   @override
   void onUpdate(double elapsedSeconds) {
     super.onUpdate(elapsedSeconds);
 
-    _remainingSeconds -= elapsedSeconds;
-    if (_remainingSeconds <= 0) {
+    remainingSeconds -= elapsedSeconds;
+    if (remainingSeconds <= 0) {
       if (onDespawn != null) {
         onDespawn();
       } else {
@@ -21,6 +21,6 @@ class DespawnComponent extends GameObjectComponent {
   }
 
   void resetTimer(double remainingSeconds) {
-    this._remainingSeconds = remainingSeconds;
+    this.remainingSeconds = remainingSeconds;
   }
 }

@@ -46,8 +46,17 @@ class Gamo {
       _activeKeys.remove(event.keyCode);
     });
 
+    buildThread();
+
     // Start off the infinite animation loop
     frame(0);
+  }
+
+  void buildThread() async {
+    while(true) {
+      stage.build();
+      await Future.delayed(Duration(milliseconds: 10));
+    }
   }
 
   /// This is the infinite animation loop; we request that the web browser
@@ -77,7 +86,7 @@ class Gamo {
     Shader.modelMatrix = Matrix4.identity();*/
 
       //TEMP! Should be on separate thread.
-      stage.build();
+      //stage.build();
 
       stage.draw();
 
